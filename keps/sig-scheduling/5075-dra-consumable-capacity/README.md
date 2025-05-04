@@ -134,7 +134,7 @@ The virtual network device is created and configured once the CNI is called base
 The configured information specific to the generated device cannot be listed in the ResourceSlice in advance. 
 
 This feature is also beneficial for the other sharable devices which are not within scope of [KEP-4815](https://github.com/kubernetes/enhancements/issues/4815).
-For instance, this feature will be allow reserving memory fraction of virtual GPU in [the AWS virtual GPU device plugin](https://github.com/awslabs/aws-virtual-gpu-device-plugin).
+For instance, this feature will allow reserving memory fraction of virtual GPU in [the AWS virtual GPU device plugin](https://github.com/awslabs/aws-virtual-gpu-device-plugin).
 In other words, the device capacity allocation is determined by the user's claim. 
 
 ### Goals
@@ -149,7 +149,7 @@ In other words, the device capacity allocation is determined by the user's claim
 - Support network security policy.
 - Support an aggregated resource consumption request. 
   By default, the sharable device can be allocated once for each pod's allocation.
-  However, a user may want an aggrated amount of resources which can come from a single or multiple sharable device.
+  However, a user may want an aggregated amount of resources which can come from a single or multiple sharable device.
   This is related to [the comment about `distinctAttributes`](https://github.com/kubernetes/enhancements/pull/5104#discussion_r1943835445).
 
 ## Proposal
@@ -171,9 +171,9 @@ When requesting two interfaces, the user requests two devices. To ensure that th
 
 #### Story 3
 
-A DRA driver for networks supports QoS guaranteed bandwidth which can ensures a specific bandwidth amount of the sharable network can be reserved exclusively to resource requests. A DRA driver also specifies minimum, maximum amount of reserved capacity for each resource request.
+A DRA driver for networks supports QoS guaranteed bandwidth which can ensure a specific bandwidth amount of the sharable network can be reserved exclusively to resource requests. A DRA driver also specifies minimum, maximum amount of reserved capacity for each resource request.
 When requesting the guaranteed network device, 
-users specifies their required guaranteed bandwidth. Otherwise, the default value defined by the DRA driver is applied.
+users specify their required guaranteed bandwidth. Otherwise, the default value defined by the DRA driver is applied.
 
 ### Risks and Mitigations
 
@@ -195,7 +195,7 @@ users specifies their required guaranteed bandwidth. Otherwise, the default valu
 This enhancement introduces a `sharable` field within the `Device` of the ResourceSlice
 to mark whether the device is a sharable device.
 The sharable device can be assigned to more than one request if it satisfies the selection criteria and constraints.
-The select condition `device.sharable == true/false` is used to identify to select the device with a `sharable` property or not.
+The select condition `device.sharable == true/false` is used to identify whether to select the device with a `sharable` property or not.
 
 The enhancement also adds a `SharingPolicy` field to `DeviceCapacity`.
 This field specifies how the capacity can be sharable between different requests.
@@ -692,12 +692,13 @@ in back-to-back releases.
 
 In the context of this enhancement, the following strategy is proposed:
 
-* **All introduced fields are optional and can be omitted if empty.** This means that during the upgrade or downgrade process, if certain fields or configurations are not required, they can be left out without causing issues or disrupting the upgrade process.
+* **All introduced fields are optional and can be omitted if empty.** 
+This means that during the upgrade or downgrade process, if certain fields or configurations are not required, they can be left out without causing issues or disrupting the upgrade process.
 
 * **The introduced mechanisms will only be applied if the "sharable" field of the device is not set.**
-  This ensures that the feature only activates when specific conditions are met, providing flexibility in how the feature is applied.
+This ensures that the feature only activates when specific conditions are met, providing flexibility in how the feature is applied.
 
-  If the "sharable" field is not set, the scheduling mechanisms related to the shared device (e.g., allocating network resources, managing devices) will be triggered according to the introduced enhancement.
+If the "sharable" field is not set, the scheduling mechanisms related to the shared device (e.g., allocating network resources, managing devices) will be triggered according to the introduced enhancement.
 
 * **The upgrade and downgrade processes will follow the DRA strategy.**
 
